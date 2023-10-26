@@ -62,6 +62,24 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""ff15e2be-6963-4df1-a408-f79e95bdf1f6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""6bdc770b-92af-420c-b918-34629cad7274"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -163,6 +181,28 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
                     ""action"": ""UnEquip gun"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""37f74007-6d8f-40c5-b6be-6f3619ef96bc"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4552fef2-d4e6-4f59-9f23-848e7997864f"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -221,6 +261,34 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""RELOAD"",
+            ""id"": ""19a1a48a-e1cc-4224-9661-9a40bec46097"",
+            ""actions"": [
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""040113cb-dff5-47f9-a98d-ca5d703b956c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""654fc647-43e7-4aa4-8816-6abc136eebc6"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -231,12 +299,17 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
         m_InGame_Jump = m_InGame.FindAction("Jump", throwIfNotFound: true);
         m_InGame_Equipgun = m_InGame.FindAction("Equip gun", throwIfNotFound: true);
         m_InGame_UnEquipgun = m_InGame.FindAction("UnEquip gun", throwIfNotFound: true);
+        m_InGame_Shoot = m_InGame.FindAction("Shoot", throwIfNotFound: true);
+        m_InGame_Reload = m_InGame.FindAction("Reload", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Newaction = m_UI.FindAction("New action", throwIfNotFound: true);
         // Permanent
         m_Permanent = asset.FindActionMap("Permanent", throwIfNotFound: true);
         m_Permanent_Newaction = m_Permanent.FindAction("New action", throwIfNotFound: true);
+        // RELOAD
+        m_RELOAD = asset.FindActionMap("RELOAD", throwIfNotFound: true);
+        m_RELOAD_Reload = m_RELOAD.FindAction("Reload", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -302,6 +375,8 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
     private readonly InputAction m_InGame_Jump;
     private readonly InputAction m_InGame_Equipgun;
     private readonly InputAction m_InGame_UnEquipgun;
+    private readonly InputAction m_InGame_Shoot;
+    private readonly InputAction m_InGame_Reload;
     public struct InGameActions
     {
         private @Gamecontrols m_Wrapper;
@@ -310,6 +385,8 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_InGame_Jump;
         public InputAction @Equipgun => m_Wrapper.m_InGame_Equipgun;
         public InputAction @UnEquipgun => m_Wrapper.m_InGame_UnEquipgun;
+        public InputAction @Shoot => m_Wrapper.m_InGame_Shoot;
+        public InputAction @Reload => m_Wrapper.m_InGame_Reload;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -331,6 +408,12 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
             @UnEquipgun.started += instance.OnUnEquipgun;
             @UnEquipgun.performed += instance.OnUnEquipgun;
             @UnEquipgun.canceled += instance.OnUnEquipgun;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
         }
 
         private void UnregisterCallbacks(IInGameActions instance)
@@ -347,6 +430,12 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
             @UnEquipgun.started -= instance.OnUnEquipgun;
             @UnEquipgun.performed -= instance.OnUnEquipgun;
             @UnEquipgun.canceled -= instance.OnUnEquipgun;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
         }
 
         public void RemoveCallbacks(IInGameActions instance)
@@ -456,12 +545,60 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
         }
     }
     public PermanentActions @Permanent => new PermanentActions(this);
+
+    // RELOAD
+    private readonly InputActionMap m_RELOAD;
+    private List<IRELOADActions> m_RELOADActionsCallbackInterfaces = new List<IRELOADActions>();
+    private readonly InputAction m_RELOAD_Reload;
+    public struct RELOADActions
+    {
+        private @Gamecontrols m_Wrapper;
+        public RELOADActions(@Gamecontrols wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Reload => m_Wrapper.m_RELOAD_Reload;
+        public InputActionMap Get() { return m_Wrapper.m_RELOAD; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(RELOADActions set) { return set.Get(); }
+        public void AddCallbacks(IRELOADActions instance)
+        {
+            if (instance == null || m_Wrapper.m_RELOADActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_RELOADActionsCallbackInterfaces.Add(instance);
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
+        }
+
+        private void UnregisterCallbacks(IRELOADActions instance)
+        {
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
+        }
+
+        public void RemoveCallbacks(IRELOADActions instance)
+        {
+            if (m_Wrapper.m_RELOADActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IRELOADActions instance)
+        {
+            foreach (var item in m_Wrapper.m_RELOADActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_RELOADActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public RELOADActions @RELOAD => new RELOADActions(this);
     public interface IInGameActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnEquipgun(InputAction.CallbackContext context);
         void OnUnEquipgun(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -470,5 +607,9 @@ public partial class @Gamecontrols: IInputActionCollection2, IDisposable
     public interface IPermanentActions
     {
         void OnNewaction(InputAction.CallbackContext context);
+    }
+    public interface IRELOADActions
+    {
+        void OnReload(InputAction.CallbackContext context);
     }
 }

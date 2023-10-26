@@ -13,6 +13,7 @@ public static class InputManager
 
         _gamecontrols.Permanent.Enable();
 
+        // Connects input action to code
         _gamecontrols.InGame.Movement.performed += jeff => {
 
             myPlayer.SetMovementDirection(jeff.ReadValue<Vector3>());
@@ -22,13 +23,21 @@ public static class InputManager
                 myPlayer.Jump();
 
             };
-        _gamecontrols.InGame.Equipgun.performed += hello =>
+       _gamecontrols.InGame.Equipgun.performed += hello =>
         {
             myPlayer.EquipGun();
         };
         _gamecontrols.InGame.UnEquipgun.performed += hello =>
         {
             myPlayer.UnEquipGun();
+        };
+        _gamecontrols.InGame.Shoot.performed += shoot =>
+        {
+            myPlayer.Shoot();
+        }; 
+        _gamecontrols.InGame.Reload.performed += Reload =>
+        {
+            myPlayer.Reload();
         };
 
     }
@@ -43,5 +52,6 @@ public static class InputManager
         _gamecontrols.InGame.Disable();
         _gamecontrols.UI.Enable();
     }
+
 
 }
