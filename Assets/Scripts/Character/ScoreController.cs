@@ -7,9 +7,10 @@ public class ScoreController : MonoBehaviour
 {
     public static ScoreController scoreController;
 
-    public TextMeshProUGUI scoreUI;
+    public TextMeshProUGUI scoreUI, ammoUI;
 
     private int totalScore;
+
 
     private void Awake()
     {
@@ -25,5 +26,12 @@ public class ScoreController : MonoBehaviour
         totalScore += score;
 
         scoreUI.text = "Score: " + totalScore.ToString();
+    }
+
+    public void UpdateAmmo(int currentAmmo,int maxAmmo)
+    {
+      
+
+       ammoUI.text ="Ammo: " + currentAmmo.ToString() + "/" + maxAmmo.ToString();
     }
 }

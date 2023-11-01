@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 public class Player : MonoBehaviour
 {
@@ -35,6 +36,10 @@ public class Player : MonoBehaviour
     [SerializeField] private float maxHealth;
     private int shotsRemaningCounter;
     private float _health;
+    
+
+ 
+
 
     private float Health
     {
@@ -53,8 +58,12 @@ public class Player : MonoBehaviour
     private int currentAmmo;
     private int storedAmmo;
 
+    [Header("weapon burst")]
+    [SerializeField] private float _fireRate = 0.08f;
+    private bool _bursting = false;
 
-    
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,9 +87,7 @@ public class Player : MonoBehaviour
 
         Health -= Time.deltaTime * 5;
 
-        if (Input.GetButtonDown("RELOAD"))
-             Reload();
-           
+
     }
 
     public void SetMovementDirection(Vector3 currentDirection)
@@ -113,27 +120,50 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Gun Unequipped");
     }
+
+
     public void Shoot()
     {
-        if(currentAmmo < 0)
-            Reload();
+        if (currentAmmo <= 0)
+            return;
 
         isAttacking = !isAttacking;
-         if (isAttacking)
+         if (isAttacking && ! _bursting)
          {
+
+            _bursting = true;
+            StartCoroutine(BurstFire());
+
             weapon.StartAttack();
-            currentAmmo--;
+            currentAmmo = currentAmmo-3;
+            
+
+            ScoreController.scoreController.UpdateAmmo(currentAmmo, maxAmmo);
          }
          else
          {
-             weapon.EndAttack();
-         }   
+            weapon.EndAttack();
+         }
+
+
     }
     public void Reload()
     {
         int ammo = currentAmmo;
         currentAmmo += magSize - ammo;
         storedAmmo -= magSize - ammo;
+
+        ScoreController.scoreController.UpdateAmmo(currentAmmo, maxAmmo);
+    }
+
+    private IEnumerator BurstFire()
+    {
+        yield return new WaitForSeconds(_fireRate);
+        Shoot();
+        yield return new WaitForSeconds(_fireRate);
+        Shoot();
+        yield return new WaitForSeconds(_fireRate);
+        _bursting = false;
     }
 
 }
